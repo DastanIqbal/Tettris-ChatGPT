@@ -101,6 +101,8 @@ class MainActivity : AppCompatActivity() {
         if (canMoveShape(ShapeDirection.LEFT)) {
             currentShape?.moveLeft()
             tetrisGridView.updateGrid(currentShape!!)
+        } else {
+            
         }
     }
 
@@ -108,12 +110,14 @@ class MainActivity : AppCompatActivity() {
         if (canMoveShape(ShapeDirection.RIGHT)) {
             currentShape?.moveRight()
             tetrisGridView.updateGrid(currentShape!!)
+        } else {
+
         }
     }
 
     private fun moveShapeDown() {
         // Check if the shape can move down
-        if (canMoveShapeDown()) {
+        if (canMoveShape(ShapeDirection.DOWN)) {
             currentShape?.moveDown()
             tetrisGridView.updateGrid(currentShape!!)
         } else {
@@ -138,42 +142,29 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun canMoveShapeDown(): Boolean {
-        Log.d("canMoveShapeDown")
-        // Implement the logic to check if the shape can move down
-        // For example, check if the shape's position + 1 is within the grid boundaries and if there are no obstructions below the shape.
-        // Return true if the shape can move down, false otherwise.
-
+    private fun canMoveShape(direction: ShapeDirection): Boolean {
+        Log.d("canMoveShape")
         val shape = currentShape ?: return false
 
         for (block in shape.blocks) {
-            val row = shape.positionY + block.y + 1
-            val col = shape.positionX + block.x
+            val row = shape.positionY + block.y + if (direction == ShapeDirection.DOWN) 1 else 0
+            val col =
+                shape.positionX + block.x + if (direction == ShapeDirection.LEFT) -1 else if (direction == ShapeDirection.RIGHT) 1 else 0
 
             Log.d("Row $row")
-            // Check if the shape has reached the bottom of the grid or collides with other shapes
-            if (row >= tetrisGridView.numRows || tetrisGridView.grid[row][col].state == TetrisShapeGridState.LOCK.state) {
+
+            // Check Left/Right boundary
+            if (col >= tetrisGridView.numColumns || col < 0) {
                 return false
             }
-        }
 
-        return true
-    }
+            // Check Bottom boundary
+            if (row >= tetrisGridView.numRows) {
+                return false
+            }
 
-    private fun canMoveShape(direction: ShapeDirection): Boolean {
-        Log.d("canMoveShapeLeft")
-        val shape = currentShape ?: return false
-
-        for (block in shape.blocks) {
-            val row = shape.positionY + block.y
-            val col = shape.positionX + block.x + if (direction == ShapeDirection.LEFT) -1 else 1
-
-            Log.d("Row $row")
-            // Check if the shape has reached the bottom of the grid or collides with other shapes
-            if (col >= tetrisGridView.numColumns ||
-                col < 0 ||
-                tetrisGridView.grid[row][col].state == TetrisShapeGridState.LOCK.state
-            ) {
+            // Check if Lock
+            if (tetrisGridView.grid[row][col].state == TetrisShapeGridState.LOCK.state) {
                 return false
             }
         }
