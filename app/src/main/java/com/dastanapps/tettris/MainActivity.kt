@@ -6,7 +6,9 @@ import android.os.Looper
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.dastanapps.tettris.grid.TetrisGridView
+import com.dastanapps.tettris.model.ShapeDirection
 import com.dastanapps.tettris.model.TetrisShape
+import com.dastanapps.tettris.model.TetrisShapeGridState
 import com.dastanapps.tettris.model.createIShape
 import com.dastanapps.tettris.model.createJShape
 import com.dastanapps.tettris.model.createLShape
@@ -96,13 +98,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun moveShapeLeft() {
-        currentShape?.moveLeft()
-        tetrisGridView.updateGrid(currentShape!!)
+        if (canMoveShape(ShapeDirection.LEFT)) {
+            currentShape?.moveLeft()
+            tetrisGridView.updateGrid(currentShape!!)
+        }
     }
 
     private fun moveShapeRight() {
-        currentShape?.moveRight()
-        tetrisGridView.updateGrid(currentShape!!)
+        if (canMoveShape(ShapeDirection.RIGHT)) {
+            currentShape?.moveRight()
+            tetrisGridView.updateGrid(currentShape!!)
+        }
     }
 
     private fun moveShapeDown() {
@@ -146,7 +152,28 @@ class MainActivity : AppCompatActivity() {
 
             Log.d("Row $row")
             // Check if the shape has reached the bottom of the grid or collides with other shapes
-            if (row >= tetrisGridView.numRows) {
+            if (row >= tetrisGridView.numRows || tetrisGridView.grid[row][col].state == TetrisShapeGridState.LOCK.state) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private fun canMoveShape(direction: ShapeDirection): Boolean {
+        Log.d("canMoveShapeLeft")
+        val shape = currentShape ?: return false
+
+        for (block in shape.blocks) {
+            val row = shape.positionY + block.y
+            val col = shape.positionX + block.x + if (direction == ShapeDirection.LEFT) -1 else 1
+
+            Log.d("Row $row")
+            // Check if the shape has reached the bottom of the grid or collides with other shapes
+            if (col >= tetrisGridView.numColumns ||
+                col < 0 ||
+                tetrisGridView.grid[row][col].state == TetrisShapeGridState.LOCK.state
+            ) {
                 return false
             }
         }

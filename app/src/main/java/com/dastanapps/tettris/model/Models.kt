@@ -9,6 +9,12 @@ enum class TetrisShapeGridState(val state: Int) {
     LOCK(-1)
 }
 
+enum class ShapeDirection(val value: Int) {
+    LEFT(0),
+    RIGHT(1),
+    DOWN(2)
+}
+
 data class TetrisShape(
     val blocks: List<Block>,
     var positionX: Int = 0,
