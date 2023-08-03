@@ -6,8 +6,10 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import com.dastanapps.tettris.R
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShapeGridState
+import com.dastanapps.tettris.util.px
 
 class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -15,13 +17,36 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
     internal val numRows = 20
     internal val numColumns = 11
 
+    // Define the grid
+    internal val grid =
+        Array(numRows) { Array(numColumns) { TetrisShapeGridState.NONE } }
+
     // Define variables for cell size
     private var cellWidth = 0
     private var cellHeight = 0
 
-    // Define the grid
-    internal val grid =
-        Array(numRows) { Array(numColumns) { TetrisShapeGridState.NONE } }
+    private val grayPain by lazy {
+        Paint().apply {
+            style = Paint.Style.STROKE
+            color = Color.LTGRAY
+        }
+    }
+
+    private val unlockedShapePaint by lazy {
+        Paint().apply {
+            style = Paint.Style.FILL
+            color = context.getColor(R.color.tetromino_color)
+        }
+    }
+
+    private val lockedShapePaint by lazy {
+        Paint().apply {
+            style = Paint.Style.FILL
+            color = context.getColor(R.color.locked_tetromino_color)
+        }
+    }
+
+    private val dp8 by lazy { 4.px(context) }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -35,6 +60,13 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
         super.onDraw(canvas)
 
         // Draw the grid lines
+        drawGrid(canvas)
+
+        // Draw the occupied cells
+        drawShape(canvas)
+    }
+
+    private fun drawShape(canvas: Canvas) {
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
                 val left = j * cellWidth
@@ -42,39 +74,42 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
                 val right = left + cellWidth
                 val bottom = top + cellHeight
 
-                val paint = Paint()
-                paint.style = Paint.Style.STROKE
-                paint.color = Color.LTGRAY
+                if (grid[i][j] in arrayOf(TetrisShapeGridState.MARK)) {
+                    canvas.drawRect(
+                        left.toFloat() + dp8,
+                        top.toFloat() + dp8,
+                        right.toFloat() - dp8,
+                        bottom.toFloat() - dp8,
+                        unlockedShapePaint
+                    )
+                } else if (grid[i][j] == TetrisShapeGridState.LOCK) {
+                    canvas.drawRect(
+                        left.toFloat() + dp8,
+                        top.toFloat() + dp8,
+                        right.toFloat() - dp8,
+                        bottom.toFloat() - dp8,
+                        lockedShapePaint
+                    )
+                }
+            }
+        }
+    }
+
+    private fun drawGrid(canvas: Canvas) {
+        for (i in 0 until numRows) {
+            for (j in 0 until numColumns) {
+                val left = j * cellWidth
+                val top = i * cellHeight
+                val right = left + cellWidth
+                val bottom = top + cellHeight
+
                 canvas.drawRect(
                     left.toFloat(),
                     top.toFloat(),
                     right.toFloat(),
                     bottom.toFloat(),
-                    paint
+                    grayPain
                 )
-            }
-        }
-
-        // Draw the occupied cells
-        for (i in 0 until numRows) {
-            for (j in 0 until numColumns) {
-                if (grid[i][j] in arrayOf(TetrisShapeGridState.LOCK, TetrisShapeGridState.MARK)) {
-                    val left = j * cellWidth
-                    val top = i * cellHeight
-                    val right = left + cellWidth
-                    val bottom = top + cellHeight
-
-                    val paint = Paint()
-                    paint.style = Paint.Style.FILL
-                    paint.color = Color.BLUE
-                    canvas.drawRect(
-                        left.toFloat(),
-                        top.toFloat(),
-                        right.toFloat(),
-                        bottom.toFloat(),
-                        paint
-                    )
-                }
             }
         }
     }

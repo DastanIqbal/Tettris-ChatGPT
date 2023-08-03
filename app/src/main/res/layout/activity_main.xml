@@ -23,17 +23,18 @@
             android:text="Left" />
 
         <Button
+            android:id="@+id/downButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Down" />
+
+        <Button
             android:id="@+id/rightButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Right" />
 
-        <Button
-            android:id="@+id/downButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Down" />
     </LinearLayout>
 </LinearLayout>

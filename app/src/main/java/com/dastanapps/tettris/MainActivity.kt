@@ -7,7 +7,6 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.dastanapps.tettris.grid.TetrisGridView
 import com.dastanapps.tettris.model.TetrisShape
-import com.dastanapps.tettris.model.TetrisShapeGridState
 import com.dastanapps.tettris.model.createIShape
 import com.dastanapps.tettris.model.createJShape
 import com.dastanapps.tettris.model.createLShape
