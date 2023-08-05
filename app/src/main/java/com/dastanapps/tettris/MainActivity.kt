@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             moveShapeDown()
             handler.postDelayed(
                 this,
-                1000
+                1000 / SHAPE_SPEED
             ) // Adjust the interval (in milliseconds) for the automatic movement
         }
     }
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
             currentShape?.moveLeft()
             tetrisGridView.updateGrid(currentShape!!)
         } else {
-            
+
         }
     }
 
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
     private fun startAutoMove() {
         handler.postDelayed(
             moveDownRunnable,
-            1000
+            1000 / SHAPE_SPEED
         ) // Adjust the interval (in milliseconds) for the automatic movement
     }
 
@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleShapeCollision() {
         val shape = currentShape ?: return
 
-        // ... (Implement row clearing and other logic here)
+        tetrisGridView.handleRowClearing()
 
         // Create a new shape and start the automatic movement again
         startNewGame()
@@ -188,6 +188,10 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopAutoMove()
+    }
+
+    companion object {
+        const val SHAPE_SPEED = 2L
     }
 }
 

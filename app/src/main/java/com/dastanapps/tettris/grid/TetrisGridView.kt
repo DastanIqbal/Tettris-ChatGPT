@@ -145,4 +145,49 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
         // Invalidate the view to trigger a redraw
         invalidate()
     }
+
+
+    private fun isRowFilled(row: Int): Boolean {
+        for (col in 0 until numColumns) {
+            if (grid[row][col] != TetrisShapeGridState.LOCK) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun handleRowClearing() {
+        val rowsToClear = mutableListOf<Int>()
+
+        for (row in 0 until numRows) {
+            if (isRowFilled(row)) {
+                rowsToClear.add(row)
+            }
+        }
+
+        if (rowsToClear.isNotEmpty()) {
+            clearRows(rowsToClear)
+            moveRowsDown(rowsToClear)
+        }
+
+        invalidate()
+    }
+
+    private fun clearRows(rowsToClear: List<Int>) {
+        for (row in rowsToClear) {
+            for (col in 0 until numColumns) {
+                grid[row][col] = TetrisShapeGridState.NONE
+            }
+        }
+    }
+
+    private fun moveRowsDown(rowsToClear: List<Int>) {
+        for (i in rowsToClear) {
+            for (row in i downTo 1) {
+                for (col in 0 until numColumns) {
+                    grid[row][col] = grid[row - 1][col]
+                }
+            }
+        }
+    }
 }
