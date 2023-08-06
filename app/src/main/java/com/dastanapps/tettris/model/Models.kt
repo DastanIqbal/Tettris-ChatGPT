@@ -31,6 +31,30 @@ data class TetrisShape(
     fun moveDown() {
         positionY += 1
     }
+
+    companion object {
+        fun randomShape(columns: Int): TetrisShape {
+            val shapeFunctions = listOf(
+                ::createIShape,
+                ::createJShape,
+                ::createLShape,
+                ::createOShape,
+                ::createSShape,
+                ::createTShape,
+                ::createZShape
+            )
+            val randomShapeIndex = (shapeFunctions.indices).random()
+            val randomShape = shapeFunctions[randomShapeIndex].invoke()
+
+            // Calculate the initial positionX value to center the shape
+            val centerColumn = (columns - 1) / 2 // Assuming odd number of columns
+            val shapeWidth =
+                randomShape.blocks.maxOf { it.x } - randomShape.blocks.minOf { it.x } + 1
+            randomShape.positionX = centerColumn - shapeWidth / 2
+
+            return randomShape
+        }
+    }
 }
 
 // I Shape
