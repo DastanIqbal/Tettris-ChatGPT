@@ -43,9 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         // Start a new game or update the grid with the current shape position
         startNewGame()
-
-        // Start the automatic downward movement
-        startAutoMove()
     }
 
     // Method to start a new game
@@ -55,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
         // Update the grid with the current shape position
         tetrisGridView.updateGrid(currentShape!!)
+
+        // Start the automatic downward movement
+        startAutoMove()
     }
 
     // Method to get a random Tetris shape
@@ -138,6 +138,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopAutoMove() {
+        Log.d("stopAutoMove")
         handler.removeCallbacks(moveDownRunnable)
 
     }
