@@ -39,6 +39,6 @@ class TetrisSpeed(
     }
 
     companion object {
-        const val SHAPE_SPEED = 2L
+        const val SHAPE_SPEED = 1L
     }
 }

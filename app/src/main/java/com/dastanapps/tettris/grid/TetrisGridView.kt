@@ -190,4 +190,21 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
             }
         }
     }
+
+    fun isGameOver(): Boolean {
+        for (col in 0 until numColumns) {
+            if (grid[0][col] == TetrisShapeGridState.LOCK) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun resetGrid() {
+        for (i in 0 until numRows) {
+            for (j in 0 until numColumns) {
+                grid[i][j] = TetrisShapeGridState.NONE
+            }
+        }
+    }
 }

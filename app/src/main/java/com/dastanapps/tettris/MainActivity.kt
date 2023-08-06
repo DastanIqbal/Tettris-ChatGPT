@@ -1,8 +1,10 @@
 package com.dastanapps.tettris
 
 import android.os.Bundle
-import android.widget.Button
+import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.dastanapps.tettris.databinding.ActivityMainBinding
 import com.dastanapps.tettris.grid.TetrisGridView
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShape.Companion.randomShape
@@ -20,12 +22,17 @@ class MainActivity : AppCompatActivity() {
         TetrisSpeed(tetrisOps)
     }
 
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        _binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        tetrisGridView = findViewById(R.id.tetrisGridView)
-        setupButtons()
+        tetrisGridView = binding.tetrisGridView
+
+        ui()
 
         // Start a new game or update the grid with the current shape position
         startNewGame()
@@ -33,6 +40,12 @@ class MainActivity : AppCompatActivity() {
 
     // Method to start a new game
     internal fun startNewGame() {
+        if (tetrisGridView.isGameOver()) {
+            tetrisSpeed.stopAutoMove()
+            binding.incGameover.root.visibility = View.VISIBLE
+            return
+        }
+
         // Initialize the current shape to a new random shape
         currentShape = randomShape(tetrisGridView.numColumns)
 
@@ -43,20 +56,26 @@ class MainActivity : AppCompatActivity() {
         tetrisSpeed.startAutoMove()
     }
 
-    private fun setupButtons() {
-        val leftButton = findViewById<Button>(R.id.leftButton)
+    private fun ui() {
+        val leftButton = binding.incControl.leftButton
         leftButton.setOnClickListener {
             tetrisOps.moveShapeLeft()
         }
 
-        val rightButton = findViewById<Button>(R.id.rightButton)
+        val rightButton = binding.incControl.rightButton
         rightButton.setOnClickListener {
             tetrisOps.moveShapeRight()
         }
 
-        val downButton = findViewById<Button>(R.id.downButton)
+        val downButton = binding.incControl.downButton
         downButton.setOnClickListener {
             tetrisOps.moveShapeDown()
+        }
+
+        binding.incGameover.btnRetry.setOnClickListener {
+            binding.incGameover.root.visibility = View.GONE
+            tetrisGridView.resetGrid()
+            startNewGame()
         }
     }
 
