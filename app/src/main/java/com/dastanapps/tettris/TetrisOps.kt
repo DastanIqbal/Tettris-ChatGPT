@@ -1,6 +1,8 @@
 package com.dastanapps.tettris
 
+import com.dastanapps.tettris.model.Block
 import com.dastanapps.tettris.model.ShapeDirection
+import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShapeGridState
 import com.dastanapps.tettris.util.Log
 
@@ -38,7 +40,7 @@ class TetrisOps(
 
     internal fun moveShapeDown() {
         // Check if the shape can move down
-        if (canMoveShape(ShapeDirection.DOWN)) {
+        if (canMoveShape()) {
             currentShape?.moveDown()
             tetrisGridView.updateGrid(currentShape!!)
         } else {
@@ -51,7 +53,24 @@ class TetrisOps(
         }
     }
 
-    internal fun canMoveShape(direction: ShapeDirection): Boolean {
+    fun rotateShape() {
+        val shape = currentShape ?: return
+        val rotatedShape = getRotatedShape(shape)
+
+        // Check if the shape can rotate without colliding with other shapes
+        if (canMoveShape()) {
+            mainActivity.currentShape = rotatedShape
+            tetrisGridView.updateGrid(currentShape!!)
+        }
+    }
+
+    private fun getRotatedShape(shape: TetrisShape): TetrisShape {
+        val blocks = shape.blocks.map { Block(it.y, -it.x) }
+        return TetrisShape(blocks, shape.positionX, shape.positionY)
+    }
+
+
+    internal fun canMoveShape(direction: ShapeDirection = ShapeDirection.DOWN): Boolean {
         Log.d("canMoveShape")
         val shape = currentShape ?: return false
 

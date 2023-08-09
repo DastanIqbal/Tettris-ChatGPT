@@ -12,7 +12,8 @@ enum class TetrisShapeGridState(val state: Int) {
 enum class ShapeDirection(val value: Int) {
     LEFT(0),
     RIGHT(1),
-    DOWN(2)
+    DOWN(2),
+    ROTATE(3)
 }
 
 data class TetrisShape(

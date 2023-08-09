@@ -72,9 +72,15 @@ class MainActivity : AppCompatActivity() {
             tetrisOps.moveShapeDown()
         }
 
+        val rotateButton = binding.incControl.rotateButton
+        rotateButton.setOnClickListener {
+            tetrisOps.rotateShape()
+        }
+
         binding.incGameover.btnRetry.setOnClickListener {
             binding.incGameover.root.visibility = View.GONE
             tetrisGridView.resetGrid()
+            tetrisSpeed.stopAutoMove()
             startNewGame()
         }
     }
