@@ -5,6 +5,7 @@ import com.dastanapps.tettris.model.blocks.BlockJ
 import com.dastanapps.tettris.model.blocks.BlockL
 import com.dastanapps.tettris.model.blocks.BlockO
 import com.dastanapps.tettris.model.blocks.BlockS
+import com.dastanapps.tettris.model.blocks.BlockZ
 
 
 data class Block(val x: Int, val y: Int)
@@ -77,9 +78,9 @@ data class TetrisShape(
 //                ::createJShape,
 //                ::createLShape,
 //                ::createOShape,
-                ::createSShape,
+//                ::createSShape,
 //                ::createTShape,
-//                ::createZShape
+                ::createZShape
             )
             val randomShapeIndex = (shapeFunctions.indices).random()
             val randomShape = shapeFunctions[randomShapeIndex].invoke()
@@ -129,6 +130,7 @@ fun createSShape(): TetrisShape {
     val block = BlockS()
     return TetrisShape(block, block.rotate0())
 }
+
 //
 //// T Shape
 //fun createTShape(): TetrisShape {
@@ -141,13 +143,8 @@ fun createSShape(): TetrisShape {
 //    return TetrisShape(TetrominoShape.T, blocks)
 //}
 //
-//// Z Shape
-//fun createZShape(): TetrisShape {
-//    val blocks = listOf(
-//        Block(0, 0),
-//        Block(0, 1),
-//        Block(1, 1),
-//        Block(1, 2)
-//    )
-//    return TetrisShape(TetrominoShape.Z, blocks)
-//}
+// Z Shape
+fun createZShape(): TetrisShape {
+    val block = BlockZ()
+    return TetrisShape(block, block.rotate0())
+}

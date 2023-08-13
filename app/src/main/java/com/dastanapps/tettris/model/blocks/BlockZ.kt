@@ -4,25 +4,25 @@ import com.dastanapps.tettris.model.Block
 import com.dastanapps.tettris.model.ITetrisShape
 import com.dastanapps.tettris.model.TetrominoShape
 
-class BlockS : ITetrisShape() {
+class BlockZ : ITetrisShape() {
 
-    override var shapeType = TetrominoShape.S
+    override var shapeType = TetrominoShape.Z
 
     override fun rotate0(): List<Block> {
         return listOf(
+            Block(0, 0),
             Block(1, 0),
-            Block(2, 0),
-            Block(0, 1),
-            Block(1, 1)
+            Block(1, 1),
+            Block(2, 1)
         )
     }
 
     override fun rotate90(): List<Block> {
         return listOf(
-            Block(0, 0),
+            Block(1, 0),
             Block(0, 1),
             Block(1, 1),
-            Block(1, 2)
+            Block(0, 2)
         )
     }
 
