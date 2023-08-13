@@ -70,7 +70,7 @@ data class TetrisShape(
         fun randomShape(columns: Int): TetrisShape {
             val shapeFunctions = listOf(
                 ::createIShape,
-//                ::createJShape,
+                ::createJShape,
 //                ::createLShape,
 //                ::createOShape,
 //                ::createSShape,
