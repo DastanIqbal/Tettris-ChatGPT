@@ -1,5 +1,6 @@
 package com.dastanapps.tettris
 
+import com.dastanapps.tettris.grid.TetrisGridView.Companion.GRID_COLUMNS
 import com.dastanapps.tettris.model.ShapeDirection
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShapeGridState
@@ -74,7 +75,11 @@ class TetrisOps(
             when (shape.angle) {
                 0, 180 -> {
                     if (shape.shape.shapeType == TetrominoShape.I) {
-                        shape.moveLeft(movedPosition / 2)
+                        if (shape.positionX == GRID_COLUMNS - 1) {
+                            shape.moveLeft(maxX)
+                        } else {
+                            shape.moveLeft(movedPosition / 2)
+                        }
                     } else {
                         shape.moveLeft(maxX - 1)
                     }
@@ -92,7 +97,11 @@ class TetrisOps(
             when (shape.angle) {
                 0, 180 -> {
                     if (shape.shape.shapeType == TetrominoShape.I) {
-                        shape.moveLeft(movedPosition / 2)
+                        if (shape.positionX <= 1) {
+                            shape.positionX = 0
+                        } else {
+                            shape.moveLeft(movedPosition / 2)
+                        }
                     }
                 }
 

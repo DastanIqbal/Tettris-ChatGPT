@@ -14,8 +14,8 @@ import com.dastanapps.tettris.util.px
 class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     // Define variables for grid size
-    internal val numRows = 20
-    internal val numColumns = 11
+    internal val numRows = GRID_ROWS
+    internal val numColumns = GRID_COLUMNS
 
     // Define the grid
     internal val grid =
@@ -206,5 +206,10 @@ class TetrisGridView(context: Context, attrs: AttributeSet?) : View(context, att
                 grid[i][j] = TetrisShapeGridState.NONE
             }
         }
+    }
+
+    companion object {
+        val GRID_ROWS = 20
+        val GRID_COLUMNS = 11
     }
 }
