@@ -1,6 +1,5 @@
 package com.dastanapps.tettris
 
-import com.dastanapps.tettris.model.Block
 import com.dastanapps.tettris.model.ShapeDirection
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShapeGridState
@@ -53,20 +52,62 @@ class TetrisOps(
         }
     }
 
-    fun rotateShape() {
+    fun rotateShape(rowOffset: Int = 0, colOffset: Int = 0) {
         val shape = currentShape ?: return
         val rotatedShape = getRotatedShape(shape)
 
         // Check if the shape can rotate without colliding with other shapes
-        if (canMoveShape()) {
+        if (canMoveShape(rotatedShape, rowOffset, colOffset)) {
             mainActivity.currentShape = rotatedShape
             tetrisGridView.updateGrid(currentShape!!)
         }
     }
 
     private fun getRotatedShape(shape: TetrisShape): TetrisShape {
-        val blocks = shape.blocks.map { Block(it.y, -it.x) }
-        return TetrisShape(blocks, shape.positionX, shape.positionY)
+        shape.rotate()
+        val blocks = shape.blocks
+        val maxX = blocks.maxOf { it.x }
+        val maxY = blocks.maxOf { it.y }
+        val movedPosition = listOf(maxX, maxY).maxOf { it } + 1
+        if (shape.positionX >= tetrisGridView.numColumns - movedPosition) {
+            when (shape.angle) {
+                0 -> shape.moveLeft(maxX - 1)
+                90 -> shape.moveRight(maxX)
+                180 -> shape.moveLeft(maxX - 1)
+                else -> shape.moveRight(maxX)
+            }
+        }
+
+        return TetrisShape(shape.shape, shape.blocks, shape.positionX, shape.positionY, shape.angle)
+    }
+
+    // Helper function to check if the shape can move to the specified row and column
+    private fun canMoveShape(shape: TetrisShape, rowOffset: Int, colOffset: Int): Boolean {
+        for (block in shape.blocks) {
+            val row = shape.positionY + rowOffset + block.y
+            val col = shape.positionX + colOffset + block.x
+
+//            if (col >= tetrisGridView.numColumns) {
+//                val movedPosition = shape.blocks.maxOf { it.x }
+//                shape.moveLeft(movedPosition)
+//                return true
+//            }
+//
+//            if (col < 0) {
+//                val movedPosition = shape.shapeWidth() / 2
+//                shape.moveRight(movedPosition)
+//                return true
+//            }
+
+            // Check if the shape collides with other shapes or goes out of the grid's boundaries
+            if (row < 0 || row >= tetrisGridView.numRows ||
+                col < 0 || col >= tetrisGridView.numColumns ||
+                tetrisGridView.grid[row][col] == TetrisShapeGridState.LOCK
+            ) {
+                return false
+            }
+        }
+        return true
     }
 
 

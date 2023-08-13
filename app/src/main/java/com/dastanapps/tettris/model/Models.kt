@@ -16,33 +16,60 @@ enum class ShapeDirection(val value: Int) {
     ROTATE(3)
 }
 
+enum class TetrominoShape {
+    I, J, L, O, S, T, Z
+}
+
+abstract class ITetrisShape {
+    open val shapeType = TetrominoShape.I
+    abstract fun rotate0(): List<Block>
+    abstract fun rotate90(): List<Block>
+    abstract fun rotate180(): List<Block>
+    abstract fun rotate270(): List<Block>
+}
+
 data class TetrisShape(
-    val blocks: List<Block>,
+    val shape: ITetrisShape,
+    var blocks: List<Block>,
     var positionX: Int = 0,
-    var positionY: Int = 0
+    var positionY: Int = 0,
+    var angle: Int = 0,
 ) {
-    fun moveLeft() {
-        positionX -= 1
+    fun moveLeft(offset: Int = 1) {
+        positionX -= offset
     }
 
-    fun moveRight() {
-        positionX += 1
+    fun moveRight(offset: Int = 1) {
+        positionX += offset
     }
 
     fun moveDown() {
         positionY += 1
     }
 
+    fun rotate() {
+        angle += 90
+        if (angle == 360) {
+            angle = 0
+        }
+        blocks = when (angle) {
+            0 -> shape.rotate0()
+            90 -> shape.rotate90()
+            180 -> shape.rotate180()
+            else -> shape.rotate270()
+        }
+    }
+
     companion object {
         fun randomShape(columns: Int): TetrisShape {
             val shapeFunctions = listOf(
-                ::createIShape,
+//                ::createIShape,
                 ::createJShape,
-                ::createLShape,
-                ::createOShape,
-                ::createSShape,
-                ::createTShape,
-                ::createZShape
+//                ::createLShape,
+//                ::createOShape,
+//                ::createSShape,
+//                ::createTShape,
+//                ::createZShape
             )
             val randomShapeIndex = (shapeFunctions.indices).random()
             val randomShape = shapeFunctions[randomShapeIndex].invoke()
@@ -55,82 +82,82 @@ data class TetrisShape(
 
             return randomShape
         }
+
+        fun TetrisShape.shapeWidth(): Int {
+            val randomShape = this
+            return randomShape.blocks.maxOf { it.x } - randomShape.blocks.minOf { it.x } + 1
+        }
     }
 }
 
 // I Shape
-fun createIShape(): TetrisShape {
-    val blocks = listOf(
-        Block(0, 0),
-        Block(0, 1),
-        Block(0, 2),
-        Block(0, 3)
-    )
-    return TetrisShape(blocks)
-}
+//fun createIShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(0, 0),
+//        Block(0, 1),
+//        Block(0, 2),
+//        Block(0, 3)
+//    )
+//    return TetrisShape(TetrominoShape.I, blocks)
+//}
 
 // J Shape
 fun createJShape(): TetrisShape {
-    val blocks = listOf(
-        Block(1, 0),
-        Block(1, 1),
-        Block(1, 2),
-        Block(0, 2)
-    )
-    return TetrisShape(blocks)
+    val blockJ = BlockJ()
+    return TetrisShape(blockJ, blockJ.rotate0())
 }
 
 // L Shape
-fun createLShape(): TetrisShape {
-    val blocks = listOf(
-        Block(0, 0),
-        Block(0, 1),
-        Block(0, 2),
-        Block(1, 2)
-    )
-    return TetrisShape(blocks)
-}
+//fun createLShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(0, 0),
+//        Block(0, 1),
+//        Block(0, 2),
+//        Block(1, 2)
+//    )
+//    return TetrisShape(TetrominoShape.L, blocks)
+//}
 
 // O Shape
-fun createOShape(): TetrisShape {
-    val blocks = listOf(
-        Block(0, 0),
-        Block(0, 1),
-        Block(1, 0),
-        Block(1, 1)
-    )
-    return TetrisShape(blocks)
-}
+//fun createOShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(0, 0),
+//        Block(0, 1),
+//        Block(1, 0),
+//        Block(1, 1)
+//    )
+//    return TetrisShape(TetrominoShape.O, blocks)
+//}
 
 // S Shape
-fun createSShape(): TetrisShape {
-    val blocks = listOf(
-        Block(1, 0),
-        Block(1, 1),
-        Block(0, 1),
-        Block(0, 2)
-    )
-    return TetrisShape(blocks)
-}
-
-// T Shape
-fun createTShape(): TetrisShape {
-    val blocks = listOf(
-        Block(0, 0),
-        Block(0, 1),
-        Block(0, 2),
-        Block(1, 1)
-    )
-    return TetrisShape(blocks)
-}
-
-// Z Shape
-fun createZShape(): TetrisShape {
-    val blocks = listOf(
-        Block(0, 0),
-        Block(0, 1),
-        Block(1, 1),
-        Block(1, 2)
-    )
-    return TetrisShape(blocks)
-}
+//fun createSShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(1, 0),
+//        Block(1, 1),
+//        Block(0, 1),
+//        Block(0, 2)
+//    )
+//    return TetrisShape(TetrominoShape.S, blocks)
+//}
+//
+//// T Shape
+//fun createTShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(0, 0),
+//        Block(0, 1),
+//        Block(0, 2),
+//        Block(1, 1)
+//    )
+//    return TetrisShape(TetrominoShape.T, blocks)
+//}
+//
+//// Z Shape
+//fun createZShape(): TetrisShape {
+//    val blocks = listOf(
+//        Block(0, 0),
+//        Block(0, 1),
+//        Block(1, 1),
+//        Block(1, 2)
+//    )
+//    return TetrisShape(TetrominoShape.Z, blocks)
+//}
