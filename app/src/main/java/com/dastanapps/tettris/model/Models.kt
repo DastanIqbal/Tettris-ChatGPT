@@ -1,5 +1,7 @@
 package com.dastanapps.tettris.model
 
+import com.dastanapps.tettris.model.blocks.BlockI
+
 
 data class Block(val x: Int, val y: Int)
 
@@ -47,6 +49,10 @@ data class TetrisShape(
         positionY += 1
     }
 
+    fun moveUp() {
+        positionY -= 1
+    }
+
     fun rotate() {
         angle += 90
         if (angle == 360) {
@@ -63,8 +69,8 @@ data class TetrisShape(
     companion object {
         fun randomShape(columns: Int): TetrisShape {
             val shapeFunctions = listOf(
-//                ::createIShape,
-                ::createJShape,
+                ::createIShape,
+//                ::createJShape,
 //                ::createLShape,
 //                ::createOShape,
 //                ::createSShape,
@@ -91,20 +97,15 @@ data class TetrisShape(
 }
 
 // I Shape
-//fun createIShape(): TetrisShape {
-//    val blocks = listOf(
-//        Block(0, 0),
-//        Block(0, 1),
-//        Block(0, 2),
-//        Block(0, 3)
-//    )
-//    return TetrisShape(TetrominoShape.I, blocks)
-//}
+fun createIShape(): TetrisShape {
+    val block = BlockI()
+    return TetrisShape(block, block.rotate0())
+}
 
 // J Shape
 fun createJShape(): TetrisShape {
-    val blockJ = BlockJ()
-    return TetrisShape(blockJ, blockJ.rotate0())
+    val block = BlockJ()
+    return TetrisShape(block, block.rotate0())
 }
 
 // L Shape

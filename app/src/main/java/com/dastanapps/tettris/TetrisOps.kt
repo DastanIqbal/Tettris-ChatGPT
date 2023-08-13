@@ -3,6 +3,7 @@ package com.dastanapps.tettris
 import com.dastanapps.tettris.model.ShapeDirection
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShapeGridState
+import com.dastanapps.tettris.model.TetrominoShape
 import com.dastanapps.tettris.util.Log
 
 /**
@@ -54,7 +55,7 @@ class TetrisOps(
 
     fun rotateShape(rowOffset: Int = 0, colOffset: Int = 0) {
         val shape = currentShape ?: return
-        val rotatedShape = getRotatedShape(shape)
+        val rotatedShape = getRotatedShape(shape.copy())
 
         // Check if the shape can rotate without colliding with other shapes
         if (canMoveShape(rotatedShape, rowOffset, colOffset)) {
@@ -71,10 +72,39 @@ class TetrisOps(
         val movedPosition = listOf(maxX, maxY).maxOf { it } + 1
         if (shape.positionX >= tetrisGridView.numColumns - movedPosition) {
             when (shape.angle) {
-                0 -> shape.moveLeft(maxX - 1)
-                90 -> shape.moveRight(maxX)
-                180 -> shape.moveLeft(maxX - 1)
-                else -> shape.moveRight(maxX)
+                0, 180 -> {
+                    if (shape.shape.shapeType == TetrominoShape.I) {
+                        shape.moveLeft(movedPosition / 2)
+                    } else {
+                        shape.moveLeft(maxX - 1)
+                    }
+                }
+
+                else -> {
+                    if (shape.shape.shapeType == TetrominoShape.I) {
+                        shape.moveRight(movedPosition / 2)
+                    } else {
+                        shape.moveRight(maxX)
+                    }
+                }
+            }
+        } else {
+            when (shape.angle) {
+                0, 180 -> {
+                    if (shape.shape.shapeType == TetrominoShape.I) {
+                        shape.moveLeft(movedPosition / 2)
+                    }
+                }
+
+                else -> {
+                    if (shape.shape.shapeType == TetrominoShape.I) {
+                        if (shape.positionX == 0) {
+                            shape.moveRight((movedPosition / 2) - 1)
+                        } else {
+                            shape.moveRight(movedPosition / 2)
+                        }
+                    }
+                }
             }
         }
 
@@ -87,11 +117,9 @@ class TetrisOps(
             val row = shape.positionY + rowOffset + block.y
             val col = shape.positionX + colOffset + block.x
 
-//            if (col >= tetrisGridView.numColumns) {
-//                val movedPosition = shape.blocks.maxOf { it.x }
-//                shape.moveLeft(movedPosition)
-//                return true
-//            }
+            if (row >= tetrisGridView.numRows) {
+                return false
+            }
 //
 //            if (col < 0) {
 //                val movedPosition = shape.shapeWidth() / 2
