@@ -1,6 +1,7 @@
 package com.dastanapps.tettris.model
 
 import com.dastanapps.tettris.model.blocks.BlockI
+import com.dastanapps.tettris.model.blocks.BlockJ
 
 
 data class Block(val x: Int, val y: Int)

@@ -1,4 +1,8 @@
-package com.dastanapps.tettris.model
+package com.dastanapps.tettris.model.blocks
+
+import com.dastanapps.tettris.model.Block
+import com.dastanapps.tettris.model.ITetrisShape
+import com.dastanapps.tettris.model.TetrominoShape
 
 class BlockJ : ITetrisShape() {
 
