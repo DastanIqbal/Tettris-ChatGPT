@@ -75,13 +75,13 @@ data class TetrisShape(
     companion object {
         fun randomShape(columns: Int): TetrisShape {
             val shapeFunctions = listOf(
-//                ::createIShape,
-//                ::createJShape,
-//                ::createLShape,
-//                ::createOShape,
-//                ::createSShape,
+                ::createIShape,
+                ::createJShape,
+                ::createLShape,
+                ::createOShape,
+                ::createSShape,
                 ::createTShape,
-//                ::createZShape
+                ::createZShape
             )
             val randomShapeIndex = (shapeFunctions.indices).random()
             val randomShape = shapeFunctions[randomShapeIndex].invoke()
