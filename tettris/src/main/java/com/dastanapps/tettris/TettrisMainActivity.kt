@@ -9,7 +9,7 @@ import com.dastanapps.tettris.grid.TetrisGridView
 import com.dastanapps.tettris.model.TetrisShape
 import com.dastanapps.tettris.model.TetrisShape.Companion.randomShape
 
-class MainActivity : AppCompatActivity() {
+class TettrisMainActivity : AppCompatActivity() {
 
     internal lateinit var tetrisGridView: TetrisGridView
     internal var currentShape: TetrisShape? = null

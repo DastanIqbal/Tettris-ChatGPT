@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="tetromino_color">#FF4081</color> <!-- Replace this color with your desired Tetromino color -->
+    <color name="locked_tetromino_color">#FF5722</color> <!-- Replace this color with your desired color for locked Tetromino cells -->
+
+</resources>

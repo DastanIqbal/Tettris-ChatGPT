@@ -14,7 +14,7 @@ import com.dastanapps.tettris.util.Log
  */
 
 class TetrisOps(
-    private val mainActivity: MainActivity
+    private val mainActivity: TettrisMainActivity
 ) {
 
     private val currentShape get() = mainActivity.currentShape

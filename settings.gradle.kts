@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Tettris"
+rootProject.name = "ChatGPT Games"
+include(":tettris")
 include(":app")
