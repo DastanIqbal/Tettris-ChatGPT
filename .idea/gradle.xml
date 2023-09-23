@@ -10,6 +10,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/compose-ui" />
+            <option value="$PROJECT_DIR$/fruitmerger" />
+            <option value="$PROJECT_DIR$/opengles-tuts" />
             <option value="$PROJECT_DIR$/tettris" />
           </set>
         </option>
