@@ -2,18 +2,18 @@ package com.dastanapps.opengles.tuts.c1
 
 import android.content.Context
 import android.opengl.GLES20
-import android.opengl.GLES20.GL_FLOAT
-import android.opengl.GLES20.glGetAttribLocation
-import android.opengl.GLES20.glGetUniformLocation
-import android.opengl.GLES20.glUniformMatrix4fv
-import android.opengl.GLES20.glVertexAttribPointer
+import android.opengl.GLES20.GL_COLOR_BUFFER_BIT
+import android.opengl.GLES20.glClear
 import android.opengl.GLSurfaceView
-import android.opengl.Matrix.orthoM
-import com.dastanapps.opengles.tuts.LoggerConfig
-import com.dastanapps.opengles.tuts.ShaderHelper
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.FloatBuffer
+import android.opengl.Matrix.multiplyMM
+import android.opengl.Matrix.rotateM
+import android.opengl.Matrix.setIdentityM
+import android.opengl.Matrix.translateM
+import com.dastanapps.opengles.tuts.R
+import com.dastanapps.opengles.tuts.c1.objects.Mallet
+import com.dastanapps.opengles.tuts.c1.objects.Table
+import com.dastanapps.opengles.tuts.c1.programs.ColorShaderProgram
+import com.dastanapps.opengles.tuts.c1.programs.TextureShaderProgram
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -25,158 +25,102 @@ import javax.microedition.khronos.opengles.GL10
  */
 
 class AirHockeyRenderer(
-    private val context: Context
+    val context: Context
 ) : GLSurfaceView.Renderer {
-
-    private val POSITION_COMPONENT_COUNT = 2
-    private val BYTES_PER_FLOAT = 4
-
-//    var tableVerticesWithTriangles = floatArrayOf(
-//        // Triangle 1
-//        -0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,
-//        // Triangle 2
-//        -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
-//        // Line 1
-//        -0.5f, 0f, 0.5f, 0f,
-//        // Mallets
-//        0f, -0.25f, 0f, 0.25f
-//    )
-
-    var tableVerticesWithTriangles = floatArrayOf(
-        // Order of coordinates: X, Y, R, G, B
-        // Triangle Fan
-        0f, 0f, 1f, 1f, 1f,
-        -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-        0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-        0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-        -0.5f, 0.8f, 0.7f, 0.7f, 0.7f,
-        -0.5f, -0.8f, 0.7f, 0.7f, 0.7f,
-        // Line 1
-        -0.5f, 0f, 1f, 0f, 0f,
-        0.5f, 0f, 1f, 0f, 0f,
-        // Mallets
-        0f, -0.4f, 0f, 0f, 1f,
-        0f, 0.4f, 1f, 0f, 0f
-    )
 
     private var vertexShaderSource = """
         uniform mat4 u_Matrix;
         
         attribute vec4 a_Position;
-        attribute vec4 a_Color;
+        attribute vec2 a_TextureCoordinates;
         
-        varying vec4 v_Color;
+        varying vec2 v_TextureCoordinates;
         
         void main()
         {
-            v_Color = a_Color;
-            
+            v_TextureCoordinates = a_TextureCoordinates;
             gl_Position = u_Matrix * a_Position;
-            gl_PointSize = 10.0;
         }
 
     """.trimIndent()
-
-    private val A_POSITION: String = "a_Position"
-    private var aPositionLocation = 0
-
-    private val U_MATRIX = "u_Matrix"
-    private val projectionMatrix = FloatArray(16)
-    private var uMatrixLocation = 0
 
     private var fragmentShaderSource = """
         precision mediump float; 
         
-        varying vec4 v_Color;
+        uniform sampler2D u_TextureUnit;
+        varying vec2 v_TextureCoordinates;
         
         void main()
         {
-            gl_FragColor = v_Color;
+            gl_FragColor = texture2D(u_TextureUnit, v_TextureCoordinates);
         }
     """.trimIndent()
 
-    private val A_COLOR: String = "a_Color"
-    private val COLOR_COMPONENT_COUNT: Int = 3
-    private val STRIDE: Int = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT) * BYTES_PER_FLOAT
-    private var aColorLocation = 0
-
-
-    private var program = 0
-
-    private val vertexData: FloatBuffer =
-        ByteBuffer.allocateDirect(tableVerticesWithTriangles.size * BYTES_PER_FLOAT)
-            .order(ByteOrder.nativeOrder()).asFloatBuffer()
-
-    init {
-        vertexData.put(tableVerticesWithTriangles)
+    // dd
+    private val projectionMatrix = FloatArray(16)
+    private val modelMatrix: FloatArray = FloatArray(16)
+    private val table by lazy { Table() }
+    private val mallet by lazy { Mallet() }
+    private val textureProgram by lazy {
+        TextureShaderProgram(
+            vertexShaderSource,
+            fragmentShaderSource
+        )
     }
+    private val colorProgram by lazy {
+        ColorShaderProgram(
+            vertexShaderSource,
+            fragmentShaderSource
+        )
+    }
+    private var texture = 0
 
     override fun onSurfaceCreated(glUnused: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
 
-        val fragmentShader = ShaderHelper.compileFragmentShader(fragmentShaderSource)
-        val vertexShader = ShaderHelper.compileVertexShader(vertexShaderSource)
+        table
+        mallet
+        textureProgram
+        colorProgram
 
-        program = ShaderHelper.linkProgram(vertexShader, fragmentShader)
-
-        if (LoggerConfig.ON) {
-            ShaderHelper.validateProgram(program)
-        }
-
-        GLES20.glUseProgram(program)
-
-        aColorLocation = glGetAttribLocation(program, A_COLOR)
-        aPositionLocation = glGetAttribLocation(program, A_POSITION)
-        uMatrixLocation = glGetUniformLocation(program, U_MATRIX)
-
-
-        // Bind our data, specified by the variable vertexData, to the vertex
-        // attribute at location A_POSITION_LOCATION.
-        vertexData.position(0)
-        glVertexAttribPointer(
-            aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData
-        )
-
-        GLES20.glEnableVertexAttribArray(aPositionLocation)
-
-        vertexData.position(POSITION_COMPONENT_COUNT)
-        glVertexAttribPointer(
-            aColorLocation, COLOR_COMPONENT_COUNT, GL_FLOAT, false, STRIDE, vertexData
-        )
-
-        GLES20.glEnableVertexAttribArray(aColorLocation)
+        texture = TextureHelper.loadTexture(context, R.drawable.air_hockey_surface)
     }
 
     override fun onSurfaceChanged(glUnused: GL10?, width: Int, height: Int) {
         // Set the OpenGL viewport to fill the entire surface.
         GLES20.glViewport(0, 0, width, height)
-        val aspectRatio = if (width > height) width.toFloat() / height.toFloat()
-        else height.toFloat() / width.toFloat()
-        if (width > height) {
-            // Landscape
-            orthoM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, -1f, 1f)
-        } else {
-            // Portrait or square
-            orthoM(projectionMatrix, 0, -1f, 1f, -aspectRatio, aspectRatio, -1f, 1f)
-        }
+
+        perspectiveM(
+            projectionMatrix, 90f, width.toFloat() / height.toFloat(), 1f, 10f
+        )
+
+        setIdentityM(modelMatrix, 0)
+        translateM(modelMatrix, 0, 0f, 0f, -1.8f)
+        rotateM(modelMatrix, 0, -40f, 1f, 0f, 0f)
+
+        val temp = FloatArray(16)
+        multiplyMM(
+            temp, 0, projectionMatrix, 0, modelMatrix, 0
+        )
+        System.arraycopy(temp, 0, projectionMatrix, 0, temp.size)
+
     }
 
     override fun onDrawFrame(glUnused: GL10?) {
         // Clear the rendering surface.
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        glUniformMatrix4fv(uMatrixLocation, 1, false, projectionMatrix, 0)
+        glClear(GL_COLOR_BUFFER_BIT)
 
         // Draw the table.
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 6)
+        textureProgram.useProgram()
+        textureProgram.setUniforms(projectionMatrix, texture)
+        table.bindData(textureProgram)
+        table.draw()
 
-        // Draw the center dividing line.
-        GLES20.glDrawArrays(GLES20.GL_LINES, 6, 2)
-
-        // Draw the first mallet blue.
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 8, 1)
-
-        // Draw the second mallet red.
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 9, 1)
+        // Draw the mallets.
+        colorProgram.useProgram()
+        colorProgram.setUniforms(projectionMatrix)
+        mallet.bindData(colorProgram)
+        mallet.draw()
     }
 
 }
