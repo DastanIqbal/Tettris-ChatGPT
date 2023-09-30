@@ -6,6 +6,9 @@
             android:name=".airhockey.AirHockeyActivity"
             android:exported="false" />
         <activity
+            android:name=".particles.ParticlesActivity"
+            android:exported="false" />
+        <activity
             android:name=".OpenGLESActivity"
             android:exported="false" />
     </application>

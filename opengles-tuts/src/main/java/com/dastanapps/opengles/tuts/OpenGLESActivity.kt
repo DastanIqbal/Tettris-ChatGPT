@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.dastanapps.compose.models.ItemB
 import com.dastanapps.games.ui.theme.GameAppTheme
 import com.dastanapps.opengles.tuts.airhockey.AirHockeyActivity
+import com.dastanapps.opengles.tuts.particles.ParticlesActivity
 
 /**
  *
@@ -41,12 +42,11 @@ class OpenGLESActivity : AppCompatActivity() {
                     }
 
                     2 -> {
-//                        startActivity(
-//                            Intent(
-//                                this@OpenGLESActivity,
-//                                FruitMergerOpenGLESActivity::class.java
-//                            )
-//                        )
+                        startActivity(
+                            Intent(
+                                this@OpenGLESActivity, ParticlesActivity::class.java
+                            )
+                        )
                     }
 
                     4 -> {
@@ -77,6 +77,7 @@ class OpenGLESActivity : AppCompatActivity() {
                     items(
                         arrayOf(
                             ItemB(1, "Air Hockey"),
+                            ItemB(2, "Particle Effects"),
 //                            ItemB(2, "Fruit Merging"),
 //                            ItemB(3, "2048"),
 //                            ItemB(4, "OpenGLES Tutorial"),
