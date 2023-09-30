@@ -1,4 +1,4 @@
-package com.dastanapps.opengles.tuts.c1
+package com.dastanapps.opengles.tuts.airhockey
 
 import android.content.Context
 import android.opengl.GLES20
@@ -13,18 +13,18 @@ import android.opengl.Matrix.setIdentityM
 import android.opengl.Matrix.setLookAtM
 import android.opengl.Matrix.translateM
 import com.dastanapps.opengles.tuts.R
-import com.dastanapps.opengles.tuts.c1.objects.Mallet
-import com.dastanapps.opengles.tuts.c1.objects.Plane
-import com.dastanapps.opengles.tuts.c1.objects.Point
-import com.dastanapps.opengles.tuts.c1.objects.Puck
-import com.dastanapps.opengles.tuts.c1.objects.Ray
-import com.dastanapps.opengles.tuts.c1.objects.Sphere
-import com.dastanapps.opengles.tuts.c1.objects.Table
-import com.dastanapps.opengles.tuts.c1.objects.Vector
-import com.dastanapps.opengles.tuts.c1.objects.intersects
-import com.dastanapps.opengles.tuts.c1.objects.vectorBetween
-import com.dastanapps.opengles.tuts.c1.programs.ColorShaderProgram
-import com.dastanapps.opengles.tuts.c1.programs.TextureShaderProgram
+import com.dastanapps.opengles.tuts.airhockey.objects.Mallet
+import com.dastanapps.opengles.tuts.airhockey.objects.Plane
+import com.dastanapps.opengles.tuts.airhockey.objects.Point
+import com.dastanapps.opengles.tuts.airhockey.objects.Puck
+import com.dastanapps.opengles.tuts.airhockey.objects.Ray
+import com.dastanapps.opengles.tuts.airhockey.objects.Sphere
+import com.dastanapps.opengles.tuts.airhockey.objects.Table
+import com.dastanapps.opengles.tuts.airhockey.objects.Vector
+import com.dastanapps.opengles.tuts.airhockey.objects.intersects
+import com.dastanapps.opengles.tuts.airhockey.objects.vectorBetween
+import com.dastanapps.opengles.tuts.airhockey.programs.ColorShaderProgram
+import com.dastanapps.opengles.tuts.airhockey.programs.TextureShaderProgram
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.max

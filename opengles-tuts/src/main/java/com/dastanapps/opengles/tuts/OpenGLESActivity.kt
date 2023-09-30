@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dastanapps.compose.models.ItemB
 import com.dastanapps.games.ui.theme.GameAppTheme
-import com.dastanapps.opengles.tuts.c1.AirHockeyActivity
+import com.dastanapps.opengles.tuts.airhockey.AirHockeyActivity
 
 /**
  *

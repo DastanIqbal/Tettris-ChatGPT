@@ -1,4 +1,4 @@
-package com.dastanapps.opengles.tuts.c1.objects
+package com.dastanapps.opengles.tuts.airhockey.objects
 
 
 /**

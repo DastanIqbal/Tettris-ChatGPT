@@ -1,7 +1,7 @@
-package com.dastanapps.opengles.tuts.c1.objects
+package com.dastanapps.opengles.tuts.airhockey.objects
 
-import com.dastanapps.opengles.tuts.c1.data.VertexArray
-import com.dastanapps.opengles.tuts.c1.programs.ColorShaderProgram
+import com.dastanapps.opengles.tuts.airhockey.data.VertexArray
+import com.dastanapps.opengles.tuts.airhockey.programs.ColorShaderProgram
 
 
 /**

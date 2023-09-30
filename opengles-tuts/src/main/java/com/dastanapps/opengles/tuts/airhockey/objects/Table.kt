@@ -1,10 +1,10 @@
-package com.dastanapps.opengles.tuts.c1.objects
+package com.dastanapps.opengles.tuts.airhockey.objects
 
 import android.opengl.GLES20.GL_TRIANGLE_FAN
 import android.opengl.GLES20.glDrawArrays
-import com.dastanapps.opengles.tuts.c1.data.BYTES_PER_FLOAT
-import com.dastanapps.opengles.tuts.c1.data.VertexArray
-import com.dastanapps.opengles.tuts.c1.programs.TextureShaderProgram
+import com.dastanapps.opengles.tuts.airhockey.data.BYTES_PER_FLOAT
+import com.dastanapps.opengles.tuts.airhockey.data.VertexArray
+import com.dastanapps.opengles.tuts.airhockey.programs.TextureShaderProgram
 
 
 /**

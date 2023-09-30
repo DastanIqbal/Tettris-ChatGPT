@@ -1,4 +1,4 @@
-package com.dastanapps.opengles.tuts.c1.data
+package com.dastanapps.opengles.tuts.airhockey.data
 
 import android.opengl.GLES20.GL_FLOAT
 import android.opengl.GLES20.glEnableVertexAttribArray
@@ -17,7 +17,7 @@ import java.nio.FloatBuffer
 class VertexArray(
     private val triangleData: FloatArray
 ) {
-    
+
     private val vertexData: FloatBuffer =
         ByteBuffer.allocateDirect(triangleData.size * BYTES_PER_FLOAT)
             .order(ByteOrder.nativeOrder())

@@ -1,4 +1,4 @@
-package com.dastanapps.opengles.tuts.c1.programs
+package com.dastanapps.opengles.tuts.airhockey.programs
 
 import android.opengl.GLES20.GL_TEXTURE0
 import android.opengl.GLES20.GL_TEXTURE_2D

@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".c1.AirHockeyActivity"
+            android:name=".airhockey.AirHockeyActivity"
             android:exported="false" />
         <activity
             android:name=".OpenGLESActivity"
