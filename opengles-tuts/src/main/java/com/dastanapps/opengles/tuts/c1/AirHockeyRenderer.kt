@@ -5,19 +5,30 @@ import android.opengl.GLES20
 import android.opengl.GLES20.GL_COLOR_BUFFER_BIT
 import android.opengl.GLES20.glClear
 import android.opengl.GLSurfaceView
+import android.opengl.Matrix.invertM
 import android.opengl.Matrix.multiplyMM
+import android.opengl.Matrix.multiplyMV
 import android.opengl.Matrix.rotateM
 import android.opengl.Matrix.setIdentityM
 import android.opengl.Matrix.setLookAtM
 import android.opengl.Matrix.translateM
 import com.dastanapps.opengles.tuts.R
 import com.dastanapps.opengles.tuts.c1.objects.Mallet
+import com.dastanapps.opengles.tuts.c1.objects.Plane
+import com.dastanapps.opengles.tuts.c1.objects.Point
 import com.dastanapps.opengles.tuts.c1.objects.Puck
+import com.dastanapps.opengles.tuts.c1.objects.Ray
+import com.dastanapps.opengles.tuts.c1.objects.Sphere
 import com.dastanapps.opengles.tuts.c1.objects.Table
+import com.dastanapps.opengles.tuts.c1.objects.Vector
+import com.dastanapps.opengles.tuts.c1.objects.intersects
+import com.dastanapps.opengles.tuts.c1.objects.vectorBetween
 import com.dastanapps.opengles.tuts.c1.programs.ColorShaderProgram
 import com.dastanapps.opengles.tuts.c1.programs.TextureShaderProgram
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -106,8 +117,27 @@ class AirHockeyRenderer(
     }
     private var texture = 0
 
+    private val leftBound = -0.5f
+    private val rightBound = 0.5f
+    private val farBound = -0.8f
+    private val nearBound = 0.8f
+
+    private var previousBlueMalletPosition: Point? = null
+
+    private var puckPosition: Point? = null
+    private var puckVector: Vector? = null
+
+    private var malletPressed: Boolean = false
+    private lateinit var blueMalletPosition: Point
+
+    private val invertedViewProjectionMatrix = FloatArray(16)
+
     override fun onSurfaceCreated(glUnused: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+
+        blueMalletPosition = Point(0f, mallet.height / 2f, 0.4f)
+        puckPosition = Point(0f, puck.height / 2f, 0f)
+        puckVector = Vector(0f, 0f, 0f)
 
         table
         puck
@@ -133,7 +163,37 @@ class AirHockeyRenderer(
     override fun onDrawFrame(glUnused: GL10?) {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT)
+
+        // Translate the puck by its vector
+        puckPosition = puckPosition!!.translate(puckVector!!)
+
+        // If the puck struck a side, reflect it off that side.
+        if (puckPosition!!.x < leftBound + puck.radius
+            || puckPosition!!.x > rightBound - puck.radius
+        ) {
+            puckVector = Vector(-puckVector!!.x, puckVector!!.y, puckVector!!.z)
+            puckVector = puckVector!!.scale(0.9f)
+        }
+        if (puckPosition!!.z < farBound + puck.radius
+            || puckPosition!!.z > nearBound - puck.radius
+        ) {
+            puckVector = Vector(puckVector!!.x, puckVector!!.y, -puckVector!!.z)
+            puckVector = puckVector!!.scale(0.9f)
+        }
+
+        // Clamp the puck position.
+        puckPosition = Point(
+            clamp(puckPosition!!.x, leftBound + puck.radius, rightBound - puck.radius),
+            puckPosition!!.y,
+            clamp(puckPosition!!.z, farBound + puck.radius, nearBound - puck.radius)
+        )
+
+        // Friction factor
+        puckVector = puckVector!!.scale(0.99f)
+
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+
+        invertM(invertedViewProjectionMatrix, 0, viewProjectionMatrix, 0)
 
         // Draw the table.
         positionTableInScene()
@@ -175,6 +235,107 @@ class AirHockeyRenderer(
         setIdentityM(modelMatrix, 0)
         translateM(modelMatrix, 0, x, y, z)
         multiplyMM(modelViewProjectionMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0)
+    }
+
+    fun handleTouchPress(normalizedX: Float, normalizedY: Float) {
+        val ray = convertNormalized2DPointToRay(normalizedX, normalizedY)
+        // Now test if this ray intersects with the mallet by creating a
+        // bounding sphere that wraps the mallet.
+        val malletBoundingSphere = Sphere(
+            Point(
+                blueMalletPosition.x, blueMalletPosition.y, blueMalletPosition.z
+            ), mallet.height / 2f
+        )
+        // If the ray intersects (if the user touched a part of the screen that
+        // intersects the mallet's bounding sphere), then set malletPressed = // true.
+        malletPressed = intersects(malletBoundingSphere, ray)
+    }
+
+    fun handleTouchDrag(normalizedX: Float, normalizedY: Float) {
+        if (malletPressed) {
+            val ray = convertNormalized2DPointToRay(normalizedX, normalizedY)
+            // Define a plane representing our air hockey table.
+            val plane = Plane(Point(0f, 0f, 0f), Vector(0f, 1f, 0f))
+            // Find out where the touched point intersects the plane
+            // representing our table. We'll move the mallet along this plane.
+            val (x, _, z) = intersectionPoint(ray, plane)
+            // Clamp to bounds
+            previousBlueMalletPosition = blueMalletPosition
+            /*
+            blueMalletPosition =
+                new Point(touchedPoint.x, mallet.height / 2f, touchedPoint.z);
+            */
+            // Clamp to bounds
+            blueMalletPosition = Point(
+                clamp(
+                    x, leftBound + mallet.radius, rightBound - mallet.radius
+                ), mallet.height / 2f, clamp(
+                    z, 0f + mallet.radius, nearBound - mallet.radius
+                )
+            )
+
+            // Now test if mallet has struck the puck.
+            val distance: Float = vectorBetween(blueMalletPosition, puckPosition!!).length()
+            if (distance < puck.radius + mallet.radius) {
+                // The mallet has struck the puck. Now send the puck flying
+                // based on the mallet velocity.
+                puckVector = vectorBetween(
+                    previousBlueMalletPosition!!, blueMalletPosition
+                )
+            }
+        }
+    }
+
+    private fun clamp(value: Float, min: Float, max: Float): Float {
+        return min(max.toDouble(), max(value.toDouble(), min.toDouble())).toFloat()
+    }
+
+
+    private fun convertNormalized2DPointToRay(
+        normalizedX: Float, normalizedY: Float
+    ): Ray {
+        // We'll convert these normalized device coordinates into world-space
+        // coordinates. We'll pick a point on the near and far planes, and draw a
+        // line between them. To do this transform, we need to first multiply by
+        // the inverse matrix, and then we need to undo the perspective divide.
+        val nearPointNdc = floatArrayOf(normalizedX, normalizedY, -1f, 1f)
+        val farPointNdc = floatArrayOf(normalizedX, normalizedY, 1f, 1f)
+        val nearPointWorld = FloatArray(4)
+        val farPointWorld = FloatArray(4)
+        multiplyMV(
+            nearPointWorld, 0, invertedViewProjectionMatrix, 0, nearPointNdc, 0
+        )
+        multiplyMV(
+            farPointWorld, 0, invertedViewProjectionMatrix, 0, farPointNdc, 0
+        )
+
+        // Why are we dividing by W? We multiplied our vector by an inverse
+        // matrix, so the W value that we end up is actually the *inverse* of
+        // what the projection matrix would create. By dividing all 3 components
+        // by W, we effectively undo the hardware perspective divide.
+        divideByW(nearPointWorld)
+        divideByW(farPointWorld)
+
+        // We don't care about the W value anymore, because our points are now
+        // in world coordinates.
+        val nearPointRay = Point(nearPointWorld[0], nearPointWorld[1], nearPointWorld[2])
+        val farPointRay = Point(farPointWorld[0], farPointWorld[1], farPointWorld[2])
+        return Ray(
+            nearPointRay, vectorBetween(nearPointRay, farPointRay)
+        )
+    }
+
+    private fun divideByW(vector: FloatArray) {
+        vector[0] /= vector[3]
+        vector[1] /= vector[3]
+        vector[2] /= vector[3]
+    }
+
+    fun intersectionPoint(ray: Ray, plane: Plane): Point {
+        val rayToPlaneVector = vectorBetween(ray.point, plane.point)
+        val scaleFactor =
+            rayToPlaneVector.dotProduct(plane.normal) / ray.vector.dotProduct(plane.normal)
+        return ray.point.translate(ray.vector.scale(scaleFactor))
     }
 
 }
