@@ -6,23 +6,23 @@ import com.dastanapps.opengles.tuts.c1.programs.ColorShaderProgram
 
 /**
  *
- * Created by Iqbal Ahmed on 30/09/2023 12:09 AM
+ * Created by Iqbal Ahmed on 30/09/2023 3:20 PM
  *
  */
 
-class Mallet(
+class Puck(
     val radius: Float,
     val height: Float,
-    val numPointsAroundMallet: Int
+    val numPointsAroundPuck: Int
 ) {
 
-    private val POSITION_COMPONENT_COUNT: Int = 3
+    private val POSITION_COMPONENT_COUNT = 3
     private val vertexArray: VertexArray
     private val drawList: List<DrawCommand>
 
     init {
-        val generatedData = ObjectBuilder.createMallet(
-            Point(0f, 0f, 0f), radius, height, numPointsAroundMallet
+        val generatedData = ObjectBuilder.createPuck(
+            Cylinder(Point(0f, 0f, 0f), radius, height), numPointsAroundPuck
         )
 
         vertexArray = VertexArray(generatedData.vertexData)
@@ -31,7 +31,9 @@ class Mallet(
 
     fun bindData(colorProgram: ColorShaderProgram) {
         vertexArray.setVertexAttribPointer(
-            0, colorProgram.getPositionAttributeLocation(), POSITION_COMPONENT_COUNT, 0
+            0,
+            colorProgram.getPositionAttributeLocation(),
+            POSITION_COMPONENT_COUNT, 0
         )
     }
 

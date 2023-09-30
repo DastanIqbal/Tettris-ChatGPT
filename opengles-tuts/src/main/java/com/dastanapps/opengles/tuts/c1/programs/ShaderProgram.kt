@@ -17,6 +17,7 @@ open class ShaderProgram(
     // Uniform constants
     protected val U_MATRIX = "u_Matrix"
     protected val U_TEXTURE_UNIT = "u_TextureUnit"
+    protected val U_COLOR = "u_Color"
 
     // Attributeants
     protected val A_POSITION = "a_Position"

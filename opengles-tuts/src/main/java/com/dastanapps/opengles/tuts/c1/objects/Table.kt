@@ -31,7 +31,7 @@ class Table {
         -0.5f, -0.8f, 0f, 0.9f
     )
 
-    val vertexArray = VertexArray(VERTEX_DATA)
+    private val vertexArray = VertexArray(VERTEX_DATA)
 
     fun bindData(textureProgram: TextureShaderProgram) {
         vertexArray.setVertexAttribPointer(
