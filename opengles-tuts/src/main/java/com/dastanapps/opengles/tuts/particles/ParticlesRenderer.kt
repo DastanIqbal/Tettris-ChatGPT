@@ -8,19 +8,17 @@
  */
 package com.dastanapps.opengles.tuts.particles
 
+
 import android.content.Context
 import android.graphics.Color
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import com.dastanapps.opengles.tuts.R
+import com.dastanapps.opengles.tuts.particles.objects.ParticleShooter
 import com.dastanapps.opengles.tuts.particles.objects.ParticleSystem
-
-
 import com.dastanapps.opengles.tuts.particles.programs.ParticleShaderProgram
-import com.dastanapps.opengles.tuts.particles.programs.ParticleShooter
 import com.dastanapps.opengles.tuts.particles.util.Geometry
-
 import com.dastanapps.opengles.tuts.particles.util.MatrixHelper
 import com.dastanapps.opengles.tuts.particles.util.TextureHelper
 import javax.microedition.khronos.egl.EGLConfig
