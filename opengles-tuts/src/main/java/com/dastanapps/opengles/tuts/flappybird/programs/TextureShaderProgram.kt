@@ -17,6 +17,7 @@ class TextureShaderProgram(
 ) : ShaderProgram(context) {
 
     protected val A_TEXTURECOORDINATES = "a_TextureCoordinates"
+
     protected val U_TEXTUREUNIT = "u_TextureUnit"
 
     // Uniform locations
@@ -30,12 +31,9 @@ class TextureShaderProgram(
     init {
         program = ShaderHelper.buildProgram(
             vertexShaderSource = TextResourceReader.readTextFileFromResource(
-                context,
-                R.raw.flappybird_texture_vertex_shader
-            ),
-            fragmentShaderSource = TextResourceReader.readTextFileFromResource(
-                context,
-                R.raw.flappybird_texture_fragment_shader
+                context, R.raw.flappybird_texture_vertex_shader
+            ), fragmentShaderSource = TextResourceReader.readTextFileFromResource(
+                context, R.raw.flappybird_texture_fragment_shader
             )
         )
 
@@ -55,5 +53,11 @@ class TextureShaderProgram(
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
         // Tell the texture uniform sampler to use this texture in the shader by telling it to read from texture unit 0.
         GLES20.glUniform1i(uTextureUnitLocation, 0)
+    }
+
+    fun scroll(scroll: Float) {
+        val fsScroll = GLES20.glGetUniformLocation(program, "scroll")
+        GLES20.glUniform1f(fsScroll, scroll)
+
     }
 }

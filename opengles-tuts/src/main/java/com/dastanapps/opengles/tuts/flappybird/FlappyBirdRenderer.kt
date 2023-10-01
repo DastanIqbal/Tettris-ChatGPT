@@ -38,6 +38,7 @@ class FlappyBirdRenderer(
     }
 
     private var bgTexture = 0
+    var bgScroll = 0f
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0f, 0f, 0f, 1f)
@@ -68,6 +69,12 @@ class FlappyBirdRenderer(
         // Draw a background
         textureProgram.useProgram()
         textureProgram.setUniforms(viewProjectionMatrix, bgTexture)
+        textureProgram.scroll(bgScroll)
+        if (bgScroll == Float.MAX_VALUE) {
+            bgScroll = 0f
+        }
+        bgScroll += .001f
+
         background.bindData(textureProgram)
         background.draw()
 
