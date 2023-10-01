@@ -6,10 +6,9 @@
  * We make no guarantees that this code is fit for any purpose.
  * Visit http://www.pragmaticprogrammer.com/titles/kbogla for more book information.
  */
-package com.dastanapps.opengles.tuts.particles.programs
+package com.dastanapps.opengles.tuts.particles.objects
 
 import android.opengl.Matrix
-import com.dastanapps.opengles.tuts.particles.objects.ParticleSystem
 import com.dastanapps.opengles.tuts.particles.util.Geometry
 import java.util.Random
 

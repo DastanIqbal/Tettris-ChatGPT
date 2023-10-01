@@ -3,6 +3,9 @@
 
     <application>
         <activity
+            android:name=".flappybird.FlappyBirdActivity"
+            android:exported="false" />
+        <activity
             android:name=".airhockey.AirHockeyActivity"
             android:exported="false" />
         <activity
